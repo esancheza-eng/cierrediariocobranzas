@@ -83,14 +83,14 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(28,26,23,.55);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;animation:overlayIn .25s ease}
 .modal-overlay.active{display:flex}
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
-.modal-box{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);width:92%;max-width:490px;overflow:hidden;animation:modalSlide .28s cubic-bezier(.34,1.56,.64,1);position:relative}
+.modal-box{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);width:92%;max-width:490px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;animation:modalSlide .28s cubic-bezier(.34,1.56,.64,1);position:relative}
 @keyframes modalSlide{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.modal-step{display:none}.modal-step.active{display:block}
+.modal-step{display:none;flex-direction:column;overflow:hidden}.modal-step.active{display:flex;flex-direction:column;flex:1;min-height:0}
 .modal-head{padding:18px 22px 14px;border-bottom:1px solid var(--cream-dark);display:flex;align-items:center;gap:12px}
 .modal-step-badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
 .modal-step-badge.s1{background:var(--teal-pale);color:var(--teal)}.modal-step-badge.s2{background:var(--green-pale);color:var(--green-soft)}
 .modal-head-text .modal-title{font-size:14px;font-weight:700;color:var(--ink)}.modal-head-text .modal-subtitle{font-size:12px;color:var(--ink-muted);margin-top:2px}
-.modal-body{padding:18px 22px}
+.modal-body{padding:18px 22px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
 .step-progress{display:flex;align-items:center;gap:6px;margin-bottom:16px}
 .step-dot{height:4px;border-radius:2px;transition:all .3s;flex:1}
 .step-dot.done{background:var(--teal)}.step-dot.active{background:var(--gold)}.step-dot.pending{background:var(--cream-dark)}
@@ -151,6 +151,18 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .login-user-chip{display:inline-flex;align-items:center;gap:8px;background:var(--teal-pale);border:1px solid rgba(26,107,107,.2);color:var(--teal);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .15s}
 .login-user-chip:hover{background:#fff;border-color:var(--teal)}
 
+
+#retirosTbl{width:100%!important;border-collapse:separate;border-spacing:0;font-size:13.5px}
+#retirosTbl thead th{background:var(--red-soft)!important;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:13px 14px;border:none;white-space:nowrap;position:sticky;top:0;z-index:2}
+#retirosTbl thead th:first-child{border-radius:var(--radius-sm) 0 0 0}#retirosTbl thead th:last-child{border-radius:0 var(--radius-sm) 0 0}
+#retirosTbl tbody tr{transition:background .15s ease}
+#retirosTbl tbody tr:hover{background:var(--red-pale)!important}
+#retirosTbl tbody tr:nth-child(even){background:var(--cream)}
+#retirosTbl tbody tr:nth-child(even):hover{background:var(--red-pale)!important}
+#retirosTbl tbody td{padding:8px 10px;border-bottom:1px solid var(--cream-dark);vertical-align:middle}
+#retirosTbl tbody td input{border:1.5px solid transparent;background:transparent;width:100%;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--ink);padding:4px 6px;border-radius:var(--radius-xs);transition:all .15s}
+#retirosTbl tbody td input:focus{border-color:var(--red-soft);background:#fff;outline:none;box-shadow:0 0 0 2px rgba(192,57,43,.10)}
+#retirosTbl tbody td input[type="number"]{text-align:right;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -181,51 +193,25 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <!-- MODAL -->
 <div class="modal-overlay" id="saveModal">
   <div class="modal-box">
-    <div class="modal-step active" id="step1">
-      <div class="modal-head">
-        <div class="modal-step-badge s1"><i class="bi bi-geo-alt-fill"></i></div>
-        <div class="modal-head-text">
-          <div class="modal-title">Paso 1 de 2 — Ubicación de Guardado</div>
-          <div class="modal-subtitle">Registrando coordenadas GPS del dispositivo</div>
-        </div>
-      </div>
-      <div class="modal-body">
-        <div class="step-progress"><div class="step-dot active"></div><div class="step-dot pending"></div></div>
-        <div class="geo-card">
-          <div class="geo-icon loading" id="geoIcon"><i class="bi bi-crosshair2"></i></div>
-          <div style="flex:1"><div class="geo-label">Coordenadas GPS</div><div class="geo-val" id="geoVal">Obteniendo ubicación...</div><div class="accuracy-bar" id="accBar" style="display:none"><div class="accuracy-fill" id="accFill" style="width:0%"></div></div></div>
-        </div>
-        <div class="geo-card">
-          <div class="geo-icon" style="background:var(--gold-pale);color:var(--gold);font-size:18px"><i class="bi bi-clock-history"></i></div>
-          <div style="flex:1"><div class="geo-label">Marca de Tiempo</div><div class="geo-val" id="geoTimeVal">—</div></div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-main btn-clear" id="cancelStep1" style="padding:9px 18px;font-size:13px"><i class="bi bi-x-lg"></i> Cancelar</button>
-        <button class="btn-main btn-save" id="nextStep2" disabled style="padding:9px 18px;font-size:13px;opacity:.5"><i class="bi bi-arrow-right"></i> Continuar</button>
+    <div class="modal-head">
+      <div class="modal-step-badge s2"><i class="bi bi-check2-circle"></i></div>
+      <div class="modal-head-text">
+        <div class="modal-title">Confirmar Cierre Diario</div>
+        <div class="modal-subtitle">Revisa el resumen y guarda</div>
       </div>
     </div>
-    <div class="modal-step" id="step2">
-      <div class="modal-head">
-        <div class="modal-step-badge s2"><i class="bi bi-check2-circle"></i></div>
-        <div class="modal-head-text">
-          <div class="modal-title">Paso 2 de 2 — Confirmar y Enviar</div>
-          <div class="modal-subtitle">Revisa el resumen antes de guardar</div>
-        </div>
-      </div>
-      <div class="modal-body">
-        <div class="step-progress"><div class="step-dot done"></div><div class="step-dot active"></div></div>
-        <div class="sync-bar" id="syncBar"><div class="sync-dot syncing" id="syncDot"></div><span id="syncMsg">Conectando con Google Sheets…</span></div>
-        <table class="summary-table" id="summaryTable"></table>
-      </div>
-      <div class="modal-footer" id="footerPreSave" style="flex-wrap:wrap;gap:8px">
-        <button class="btn-main btn-clear" id="backStep1" style="padding:9px 16px;font-size:13px"><i class="bi bi-arrow-left"></i> Atrás</button>
-        <button class="btn-main btn-save" id="confirmSave" style="padding:9px 16px;font-size:13px"><i class="bi bi-floppy2"></i> Guardar y enviar WhatsApp</button>
-      </div>
-      <div class="modal-footer" id="footerPostSave" style="flex-wrap:wrap;gap:8px;display:none!important">
-        <div style="display:flex;align-items:center;gap:6px;color:var(--green-soft);font-size:13px;font-weight:700;flex:1"><i class="bi bi-check-circle-fill"></i> Guardado y enviado</div>
-        <button class="btn-main btn-clear" id="closeSaved" style="padding:9px 14px;font-size:13px"><i class="bi bi-x-lg"></i> Cerrar</button>
-        <button class="wa-btn" id="shareWA"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Reenviar WhatsApp</button>
+    <div class="modal-body">
+      <div class="sync-bar" id="syncBar"><div class="sync-dot syncing" id="syncDot"></div><span id="syncMsg">Sincronizando con Google Sheets…</span></div>
+      <table class="summary-table" id="summaryTable"></table>
+    </div>
+    <div class="modal-footer" id="footerPreSave" style="flex-direction:column;gap:10px;align-items:stretch">
+      <button class="btn-main btn-save" id="confirmSave" style="width:100%;justify-content:center;font-size:15px;padding:14px"><i class="bi bi-floppy2"></i> Guardar y enviar WhatsApp</button>
+      <button class="btn-main btn-clear" id="cancelModal" style="width:100%;justify-content:center;font-size:13px"><i class="bi bi-x-lg"></i> Cancelar</button>
+    </div>
+      <div class="modal-footer" id="footerPostSave" style="flex-wrap:wrap;gap:10px;display:none!important;flex-direction:column;align-items:stretch">
+        <div style="display:flex;align-items:center;gap:6px;color:var(--green-soft);font-size:13px;font-weight:700;justify-content:center;padding:4px 0"><i class="bi bi-check-circle-fill"></i> Guardado correctamente</div>
+        <button class="wa-btn" id="shareWA" style="width:100%;justify-content:center;font-size:15px;padding:14px 20px"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;fill:white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Enviar por WhatsApp</button>
+        <button class="btn-main btn-clear" id="closeSaved" style="width:100%;justify-content:center;font-size:13px"><i class="bi bi-x-lg"></i> Cerrar</button>
       </div>
     </div>
   </div>
@@ -275,12 +261,11 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   <div class="form-card">
     <div class="card-header-label"><div class="card-icon gold"><i class="bi bi-clipboard2-data"></i></div><div class="card-title">Detalle de Gestión</div></div>
     <div class="row g-3">
-      <div class="col-md-6 col-lg-3"><label class="form-label">Verificaciones por Cliente</label><input type="number" class="form-control" id="verificaciones" placeholder="0" min="0" step="1"></div>
-      <div class="col-md-6 col-lg-3"><label class="form-label">Mejora</label><input type="number" class="form-control" id="mejora" placeholder="0" min="0" step="1"></div>
-      <div class="col-md-6 col-lg-3"><label class="form-label">Contiene</label><input type="number" class="form-control" id="contiene" placeholder="0" min="0" step="1"></div>
-      <div class="col-md-6 col-lg-3"><label class="form-label">Retiros</label><input type="number" class="form-control" id="retiros" placeholder="0.00" min="0" step="0.01"></div>
-      <div class="col-md-6 col-lg-3"><label class="form-label">Refinanciamientos</label><input type="number" class="form-control" id="refinanciamientos" placeholder="0" min="0" step="1"></div>
-      <div class="col-md-6 col-lg-3"><label class="form-label">Abonos Diario</label><input type="number" class="form-control" id="abonosDiario" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="col-md-6 col-lg-3"><label class="form-label">N° Verificaciones por Cliente Dom. Laboral</label><input type="number" class="form-control" id="verificaciones" placeholder="0" min="0" step="1"></div>
+      <div class="col-md-6 col-lg-3"><label class="form-label">Mejora Diario CXC $</label><input type="number" class="form-control" id="mejora" placeholder="0" min="0" step="1"></div>
+      <div class="col-md-6 col-lg-3"><label class="form-label">Contiene Diario CXC $</label><input type="number" class="form-control" id="contiene" placeholder="0" min="0" step="1"></div>
+      <div class="col-md-6 col-lg-3"><label class="form-label">Refinanciamientos Diario $</label><input type="number" class="form-control" id="refinanciamientos" placeholder="0" min="0" step="1"></div>
+      <div class="col-md-6 col-lg-3"><label class="form-label">Recaudación Diaria $</label><input type="number" class="form-control" id="abonosDiario" placeholder="0.00" min="0" step="0.01"></div>
     </div>
   </div>
 
@@ -321,6 +306,27 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
     <div style="text-align:right">
       <div class="total-label"><i class="bi bi-calculator" style="margin-right:4px"></i>Total CXC Contiene</div>
       <div class="total-value" id="totalCXC2Wrap"><span class="total-value-currency">$</span><span id="totalCXC2">0.00</span></div>
+    </div>
+  </div>
+
+  <!-- ─── TABLA RETIROS ─── -->
+  <div class="form-card">
+    <div class="card-header-label" style="justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px"><div class="card-icon" style="background:var(--red-pale);color:var(--red-soft)"><i class="bi bi-table"></i></div><div class="card-title">Retiros Realizados el Día de Hoy</div></div>
+      <button class="btn-add-row" id="btnAddRowR" style="border-color:rgba(192,57,43,.2);color:var(--red-soft);background:var(--red-pale)"><i class="bi bi-plus-lg"></i> Agregar Fila</button>
+    </div>
+    <div class="table-wrapper">
+      <table id="retirosTbl">
+        <thead><tr><th style="width:40px">#</th><th style="width:130px">Cédula</th><th>Nombre Cliente Retiro</th><th style="width:140px;text-align:right">Monto $</th><th style="width:50px;text-align:center">Del.</th></tr></thead>
+        <tbody id="retirosTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="total-block" style="border-left:3px solid var(--red-soft)">
+    <div style="text-align:right">
+      <div class="total-label"><i class="bi bi-calculator" style="margin-right:4px"></i>Total Retiros del Día</div>
+      <div class="total-value" id="totalRetirosWrap" style="color:var(--red-soft)"><span class="total-value-currency">$</span><span id="totalRetiros">0.00</span></div>
     </div>
   </div>
 
@@ -548,10 +554,45 @@ function reindexC(){document.querySelectorAll('#contieneTbody tr').forEach((r,i)
 document.getElementById('btnAddRow').addEventListener('click',()=>{addRow();showToast('Fila agregada a Cartera Mejora','info')});
 document.getElementById('btnAddRowC').addEventListener('click',()=>{addRowC();showToast('Fila agregada a Clientes Contiene','info')});
 
+// ══ TABLA RETIROS ══
+document.getElementById('retirosTbody').addEventListener('input',function(e){
+  if(e.target.classList.contains('inp-monto-r')) recalcTotalR();
+  if(e.target.classList.contains('inp-cedula-r')) e.target.value=e.target.value.replace(/\D/g,'');
+});
+
+function recalcTotalR(){
+  let t=0;
+  document.querySelectorAll('#retirosTbody .inp-monto-r').forEach(i=>t+=parseFloat(i.value)||0);
+  document.getElementById('totalRetiros').textContent=formatCurrency(t);
+  pulsarTotal('totalRetirosWrap');
+}
+
+let rowCountR=0;
+function addRowR(c='',n='',x=''){
+  rowCountR++;
+  const tbody=document.getElementById('retirosTbody');
+  const tr=document.createElement('tr');
+  tr.dataset.id='r'+rowCountR;
+  tr.innerHTML=`<td style="color:var(--ink-muted);font-size:12px;text-align:center">${tbody.children.length+1}</td>
+    <td><input type="text" class="inp-cedula-r" placeholder="0000000000" maxlength="13" value="${c}"></td>
+    <td><input type="text" class="inp-nombre-r" placeholder="Nombre completo del cliente" value="${n}"></td>
+    <td><input type="number" class="inp-monto-r" placeholder="0.00" min="0" step="0.01" value="${x}" style="text-align:right"></td>
+    <td style="text-align:center"><button class="btn-del-row" onclick="delRowR(this)"><i class="bi bi-trash3"></i></button></td>`;
+  tbody.appendChild(tr);
+  recalcTotalR();
+}
+function delRowR(btn){
+  const tr=btn.closest('tr');
+  tr.style.opacity='0';tr.style.transform='translateX(8px)';tr.style.transition='all .2s';
+  setTimeout(()=>{tr.remove();recalcTotalR();reindexR();},200);
+}
+function reindexR(){document.querySelectorAll('#retirosTbody tr').forEach((r,i)=>r.cells[0].textContent=i+1)}
+document.getElementById('btnAddRowR').addEventListener('click',()=>{addRowR();showToast('Fila agregada a Retiros','info')});
+
 // ══ INIT ══
 $(document).ready(function(){
   $('#cobrador').select2({placeholder:'— Seleccionar cobrador —',allowClear:true,width:'100%'});
-  for(let i=0;i<3;i++){addRow();addRowC();}
+  for(let i=0;i<3;i++){addRow();addRowC();addRowR();}
 });
 
 // ══ VALIDACIÓN ══
@@ -595,6 +636,8 @@ function collectData(){
     retiros:document.getElementById('retiros').value,
     refinanciamientos:document.getElementById('refinanciamientos').value,
     abonosDiario:document.getElementById('abonosDiario').value,
+    retiros_tabla:(()=>{const r=[];document.querySelectorAll('#retirosTbody tr').forEach(tr=>{const c=tr.querySelector('.inp-cedula-r')?.value.trim()||'';const n=tr.querySelector('.inp-nombre-r')?.value.trim()||'';const x=parseFloat(tr.querySelector('.inp-monto-r')?.value)||0;if(c||n||x)r.push({cedula:c,nombre:n,monto:x});});return r;})(),
+    totalRetiros:document.getElementById('totalRetiros').textContent,
     clientes:rows,totalCXC:document.getElementById('totalCXC').textContent,
     clientesContiene:rowsC,totalCXC2:document.getElementById('totalCXC2').textContent,
     fecha:document.getElementById('dateDisplay').textContent,
@@ -620,9 +663,9 @@ function buildWAMsg(data){
 • Verificaciones: ${data.verificaciones||0}
 • Mejora: ${data.mejora||0}
 • Contiene: ${data.contiene||0}
-• Retiros: $${data.retiros||'0.00'}
+• Retiros del día: ${(data.retiros_tabla||[]).length} registro(s) | Total: $${data.totalRetiros||'0.00'}
 • Refinanciamientos: ${data.refinanciamientos||0}
-• Abonos Diario: $${data.abonosDiario||'0.00'}
+• Recaudación Diaria: $${data.abonosDiario||'0.00'}
 
 *🗂️ CLIENTES MEJORA*
 ${cl}
@@ -637,62 +680,16 @@ _Generado por Sistema de Cobranza_`;
 function openWA(data){window.open(`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(buildWAMsg(data))}`,'_blank')}
 
 // ══ MODAL ══
-let geoData=null,savedPayload=null;
+let savedPayload=null;
 
 document.getElementById('btnSave').addEventListener('click',()=>{
   if(!validateForm()){showToast('Complete los campos requeridos.','error');return;}
-  geoData=null;savedPayload=null;
-  showStep(1);
-  document.getElementById('footerPreSave').style.setProperty('display','flex','important');
+  savedPayload=null;
+  document.getElementById('footerPreSave').style.display='flex';
   document.getElementById('footerPostSave').style.setProperty('display','none','important');
   document.getElementById('syncBar').classList.remove('visible');
-  document.getElementById('saveModal').classList.add('active');
-  captureGeo();
-});
-
-function closeModal(){document.getElementById('saveModal').classList.remove('active')}
-function showStep(n){
-  document.getElementById('step1').classList.toggle('active',n===1);
-  document.getElementById('step2').classList.toggle('active',n===2);
-}
-
-function captureGeo(){
-  const icon=document.getElementById('geoIcon');
-  const val=document.getElementById('geoVal');
-  const btn=document.getElementById('nextStep2');
-  icon.className='geo-icon loading';icon.innerHTML='<i class="bi bi-crosshair2"></i>';
-  val.innerHTML='Obteniendo ubicación GPS…';btn.disabled=true;btn.style.opacity='.5';
-  const now=new Date();
-  document.getElementById('geoTimeVal').innerHTML=
-    `<span class="coord-chip">${now.toLocaleDateString('es-EC',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</span>`+
-    `<span class="coord-chip">${now.toLocaleTimeString('es-EC')}</span>`;
-  if(!navigator.geolocation){
-    icon.className='geo-icon error';icon.innerHTML='<i class="bi bi-geo-alt-fill"></i>';
-    val.innerHTML='<span style="color:var(--red-soft)">GPS no disponible.</span>';
-    geoData={lat:null,lon:null,accuracy:null,timestamp:now.toISOString()};
-    btn.disabled=false;btn.style.opacity='1';return;
-  }
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const lat=pos.coords.latitude.toFixed(6),lon=pos.coords.longitude.toFixed(6),acc=Math.round(pos.coords.accuracy);
-    geoData={lat,lon,accuracy:acc,timestamp:now.toISOString()};
-    icon.className='geo-icon success';icon.innerHTML='<i class="bi bi-geo-alt-fill"></i>';
-    const mu=`https://www.google.com/maps?q=${lat},${lon}`;
-    val.innerHTML=`<span class="coord-chip">📍 ${lat}</span><span class="coord-chip">${lon}</span><br><small style="color:var(--ink-muted)">Precisión: ±${acc} m</small><br><a class="geo-map-link" href="${mu}" target="_blank"><i class="bi bi-map"></i> Ver en mapa</a>`;
-    document.getElementById('accBar').style.display='block';
-    setTimeout(()=>document.getElementById('accFill').style.width=Math.min(100,Math.max(10,100-(acc/2)))+'%',100);
-    btn.disabled=false;btn.style.opacity='1';
-  },err=>{
-    icon.className='geo-icon error';icon.innerHTML='<i class="bi bi-exclamation-triangle-fill"></i>';
-    const m={1:'Permiso denegado.',2:'Posición no disponible.',3:'Tiempo de espera agotado.'};
-    val.innerHTML=`<span style="color:var(--red-soft)">${m[err.code]||'Error GPS.'} Se guardará sin coordenadas.</span>`;
-    geoData={lat:null,lon:null,accuracy:null,timestamp:now.toISOString()};
-    btn.disabled=false;btn.style.opacity='1';
-  },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
-}
-
-document.getElementById('nextStep2').addEventListener('click',()=>{
+  // Llenar resumen
   const data=collectData();
-  const coord=geoData?.lat?`${geoData.lat}, ${geoData.lon} (±${geoData.accuracy}m)`:'No disponible';
   document.getElementById('summaryTable').innerHTML=`
     <tr><td class="s-label">Cobrador</td><td class="s-val">${data.cobrador||'—'}</td></tr>
     <tr><td class="s-label">Fecha / Hora</td><td class="s-val">${data.fecha} ${data.hora}</td></tr>
@@ -700,23 +697,23 @@ document.getElementById('nextStep2').addEventListener('click',()=>{
     <tr><td class="s-label">Verificaciones</td><td class="s-val">${data.verificaciones||0}</td></tr>
     <tr><td class="s-label">Mejora</td><td class="s-val">${data.mejora||0}</td></tr>
     <tr><td class="s-label">Contiene</td><td class="s-val">${data.contiene||0}</td></tr>
-    <tr><td class="s-label">Retiros</td><td class="s-val">$ ${data.retiros||'0.00'}</td></tr>
+    <tr><td class="s-label">Retiros (registros)</td><td class="s-val">${data.retiros_tabla?.length||0} | $ ${data.totalRetiros||'0.00'}</td></tr>
     <tr><td class="s-label">Refinanciamientos</td><td class="s-val">${data.refinanciamientos||0}</td></tr>
-    <tr><td class="s-label">Abonos Diario</td><td class="s-val">$ ${data.abonosDiario||'0.00'}</td></tr>
+    <tr><td class="s-label">Recaudación Diaria</td><td class="s-val">$ ${data.abonosDiario||'0.00'}</td></tr>
     <tr><td class="s-label">Clientes Mejora</td><td class="s-val">${data.clientes.length}</td></tr>
     <tr><td class="s-label">Total CXC Mejora</td><td class="s-val hi">$ ${data.totalCXC}</td></tr>
     <tr><td class="s-label" style="border-top:2px solid var(--cream-dark);padding-top:10px">Clientes Contiene</td><td class="s-val" style="border-top:2px solid var(--cream-dark);padding-top:10px">${data.clientesContiene?.length||0}</td></tr>
     <tr><td class="s-label">Total CXC Contiene</td><td class="s-val" style="color:var(--gold);font-size:15px;font-weight:700">$ ${data.totalCXC2||'0.00'}</td></tr>`;
-  showStep(2);
+  document.getElementById('saveModal').classList.add('active');
 });
 
-document.getElementById('backStep1').addEventListener('click',()=>showStep(1));
-document.getElementById('cancelStep1').addEventListener('click',closeModal);
+function closeModal(){document.getElementById('saveModal').classList.remove('active')}
+document.getElementById('cancelModal').addEventListener('click',closeModal);
 
 // ══ CONFIRMAR → GUARDAR + WHATSAPP AUTOMÁTICO ══
 document.getElementById('confirmSave').addEventListener('click',async()=>{
   const data=collectData();
-  savedPayload={...data,geolocalizacion:geoData};
+  savedPayload={...data};
   try{localStorage.setItem('cierreDiario_'+Date.now(),JSON.stringify(savedPayload));}catch(e){}
 
   document.getElementById('statusPill').innerHTML='<i class="bi bi-circle-fill" style="font-size:7px"></i> Guardado';
@@ -751,7 +748,7 @@ document.getElementById('btnClear').addEventListener('click',()=>{
   document.getElementById('clientesTbody').innerHTML='';
   document.getElementById('contieneTbody').innerHTML='';
   rowCount=0;rowCountC=0;
-  setTimeout(()=>{for(let i=0;i<3;i++){addRow();addRowC();}},10);
+  setTimeout(()=>{for(let i=0;i<3;i++){addRow();addRowC();addRowR();}},10);
   document.getElementById('statusPill').innerHTML='<i class="bi bi-circle-fill" style="font-size:7px"></i> Sin guardar';
   document.getElementById('statusPill').className='status-pill pending';
   showToast('Formulario limpiado.','info');
