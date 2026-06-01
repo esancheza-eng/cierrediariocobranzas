@@ -129,9 +129,53 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 #contieneTbl tbody td input:focus{border-color:var(--gold);background:#fff;outline:none;box-shadow:0 0 0 2px rgba(184,134,11,.10)}
 #contieneTbl tbody td input[type="number"]{text-align:right;font-variant-numeric:tabular-nums}
 .total-block.contiene-total{border-left:3px solid var(--gold)}.total-block.contiene-total .total-value{color:var(--gold)}
+
+/* ─── LOGIN SCREEN ─── */
+#loginScreen{position:fixed;inset:0;background:var(--cream);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;border:1px solid var(--cream-border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:40px 36px;width:100%;max-width:400px;position:relative;overflow:hidden}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold) 0%,var(--teal) 100%)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .badge{display:inline-flex;align-items:center;gap:6px;background:var(--gold-pale);border:1px solid rgba(184,134,11,.2);color:var(--gold);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+.login-logo h2{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);margin:0;letter-spacing:-.01em}
+.login-logo p{font-size:13px;color:var(--ink-muted);margin:4px 0 0}
+.login-field{margin-bottom:16px}
+.login-field label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-muted);display:block;margin-bottom:6px}
+.login-field input{width:100%;border:1.5px solid var(--cream-border);border-radius:var(--radius-xs);background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;transition:all .2s;outline:none}
+.login-field input:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(26,107,107,.10)}
+.login-field.error input{border-color:var(--red-soft)!important;background:var(--red-pale)!important}
+.login-error{font-size:12px;color:var(--red-soft);margin-top:6px;display:none;align-items:center;gap:5px}
+.login-error.show{display:flex}
+.btn-login{width:100%;padding:12px;background:var(--teal);color:#fff;border:none;border-radius:var(--radius-xs);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px;letter-spacing:.02em}
+.btn-login:hover{background:var(--teal-light)}
+.btn-login:active{transform:scale(.98)}
+.login-user-chip{display:inline-flex;align-items:center;gap:8px;background:var(--teal-pale);border:1px solid rgba(26,107,107,.2);color:var(--teal);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .15s}
+.login-user-chip:hover{background:#fff;border-color:var(--teal)}
+
 </style>
 </head>
 <body>
+
+<!-- ─── PANTALLA DE LOGIN ─── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="badge"><i class="bi bi-building"></i> Sistema de Cobranza</div>
+      <h2>Inicio de Sesión</h2>
+      <p>Ingresa tus credenciales para continuar</p>
+    </div>
+    <div class="login-field" id="lfUser">
+      <label for="loginUser"><i class="bi bi-person"></i> Usuario</label>
+      <input type="text" id="loginUser" placeholder="" autocomplete="username" autocapitalize="none">
+    </div>
+    <div class="login-field" id="lfPass">
+      <label for="loginPass"><i class="bi bi-lock"></i> Contraseña</label>
+      <input type="password" id="loginPass" placeholder="••••" autocomplete="current-password">
+    </div>
+    <div class="login-error" id="loginError"><i class="bi bi-exclamation-circle-fill"></i> Usuario o contraseña incorrectos.</div>
+    <button class="btn-login" id="btnLogin"><i class="bi bi-box-arrow-in-right"></i> Ingresar</button>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- MODAL -->
@@ -195,6 +239,11 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
     </div>
     <div class="header-right">
       <span class="status-pill pending" id="statusPill"><i class="bi bi-circle-fill" style="font-size:7px"></i> Sin guardar</span>
+      <button class="login-user-chip" id="userChip" onclick="cerrarSesion()">
+        <i class="bi bi-person-circle"></i>
+        <span id="userChipName">—</span>
+        <i class="bi bi-box-arrow-right" style="font-size:11px;opacity:.7"></i>
+      </button>
       <div class="datetime-box"><div class="date-val" id="dateDisplay">—</div><div class="time-val" id="timeDisplay">00:00:00</div></div>
     </div>
   </div>
@@ -277,8 +326,6 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
   <div class="btn-actions">
     <button class="btn-main btn-clear" id="btnClear"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</button>
-    <button class="btn-main btn-excel" id="btnExcel"><i class="bi bi-file-earmark-spreadsheet"></i> Exportar Excel</button>
-    <button class="btn-main btn-pdf" id="btnPdf"><i class="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
     <button class="btn-main btn-save" id="btnSave"><i class="bi bi-floppy2"></i> Guardar</button>
   </div>
 </div>
@@ -293,22 +340,44 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 // ══ CONFIG ══
 const WA_PHONE = '593989938910';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6zXZVxArdrVCJFuQGxWr_FaILvmFmA21i9K4-10p0UEgbRHFalaWEDMstR7PXoXo8SA/exec';
-const CREDENCIALES = {
-  'VILLARREAL NAVARRETE FAUSTO ALBERTO':{usuario:'fvillarreal',clave:'cob20261'},
-  'MOSQUERA MEDINA HECTOR DANIEL':{usuario:'hmosquera',clave:'cob20262'},
-  'MENDOZA JIMENEZ VICTOR DARIO':{usuario:'vmendoza',clave:'cob20263'},
-  'GUILLERMO MONTANO LUIS AGUSTIN':{usuario:'lgmontano',clave:'cob20264'},
-  'CARRANZA JIMENEZ FRANKLIN GEOVANNY':{usuario:'fcarranza',clave:'cob20265'},
-  'AGUILAR CONTRERAS BYRON LUIS':{usuario:'baguilar',clave:'cob20266'},
-  'ORTEGA URGILES CELIO ISAIAS':{usuario:'cortega',clave:'cob20267'},
-  'MORAN BARROS GABRIEL EPIFANIO':{usuario:'gmoran',clave:'cob20268'},
-  'GONZALEZ CORTEZ ADOLFO MODESTO':{usuario:'agonzalez',clave:'cob20269'},
-  'MILLAN CARVAJAL RAFAEL ENRIQUE':{usuario:'rmillan',clave:'cob202610'},
-  'QUINONEZ AYALA JEFFERSON JAVIER':{usuario:'jquinonez',clave:'cob202611'},
-  'CHAVEZ GOMEZCUELLO MARIO JAVIER':{usuario:'mchavez',clave:'cob202612'},
-  'OLAYA ACURIO JOSE GABRIEL':{usuario:'jolaya',clave:'cob202613'},
-  'JARA LLIGUIN JULIO LEONARDO':{usuario:'jjara',clave:'cob202614'},
-};
+// ══ COBRADORES — usuario: 1raLetraNombre+ApellidoCompleto | clave: 1raLetraNombre+1raLetraApellido ══
+const COBRADORES = [
+  'VILLARREAL NAVARRETE FAUSTO ALBERTO',
+  'MOSQUERA MEDINA HECTOR DANIEL',
+  'MENDOZA JIMENEZ VICTOR DARIO',
+  'GUILLERMO MONTANO LUIS AGUSTIN',
+  'CARRANZA JIMENEZ FRANKLIN GEOVANNY',
+  'AGUILAR CONTRERAS BYRON LUIS',
+  'ORTEGA URGILES CELIO ISAIAS',
+  'MORAN BARROS GABRIEL EPIFANIO',
+  'GONZALEZ CORTEZ ADOLFO MODESTO',
+  'MILLAN CARVAJAL RAFAEL ENRIQUE',
+  'QUINONEZ AYALA JEFFERSON JAVIER',
+  'CHAVEZ GOMEZCUELLO MARIO JAVIER',
+  'OLAYA ACURIO JOSE GABRIEL',
+  'JARA LLIGUIN JULIO LEONARDO',
+];
+
+// Genera credenciales automáticamente:
+// Nombre completo: "APELLIDO1 APELLIDO2 NOMBRE1 NOMBRE2"
+// usuario = 1raLetra(NOMBRE1) + APELLIDO1 en minúsculas
+// clave   = 1raLetra(NOMBRE1) + 1raLetra(APELLIDO1) en minúsculas
+function generarCredencial(nombreCompleto){
+  const partes = nombreCompleto.trim().split(/\s+/);
+  // Formato: APELLIDO1 APELLIDO2 NOMBRE1 ...
+  const apellido1 = partes[0].toLowerCase();
+  const nombre1   = partes[2] ? partes[2].toLowerCase() : partes[partes.length-1].toLowerCase();
+  const usuario   = nombre1[0] + apellido1;
+  const clave     = nombre1[0] + apellido1[0];
+  return { usuario, clave };
+}
+
+// Mapa de credenciales generado automáticamente
+const CREDENCIALES = {};
+COBRADORES.forEach(c => { CREDENCIALES[c] = generarCredencial(c); });
+
+// Usuario actualmente logueado
+let cobrador_activo = null;
 
 // ══ DATETIME ══
 function pad(n){return String(n).padStart(2,'0')}
@@ -320,6 +389,69 @@ function updateDateTime(){
   document.getElementById('timeDisplay').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 }
 updateDateTime();setInterval(updateDateTime,1000);
+
+// ══ LOGIN ══
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim().toLowerCase();
+  const p=document.getElementById('loginPass').value.trim().toLowerCase();
+  document.getElementById('lfUser').classList.remove('error');
+  document.getElementById('lfPass').classList.remove('error');
+  document.getElementById('loginError').classList.remove('show');
+
+  // ── ADMINISTRADOR ──
+  if(u==='esancheza' && p==='00000'){
+    cobrador_activo = '__admin__';
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('userChipName').textContent = 'esancheza (Admin)';
+    // Admin ve TODOS los cobradores
+    const sel=document.getElementById('cobrador');
+    sel.innerHTML='<option value="">— Seleccionar cobrador —</option>';
+    COBRADORES.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; sel.appendChild(opt); });
+    if(window.$) try{ $('#cobrador').trigger('change'); }catch(e){}
+    return;
+  }
+
+  // ── COBRADOR NORMAL ──
+  const encontrado = COBRADORES.find(c=>{
+    const cr=CREDENCIALES[c];
+    return cr.usuario===u && cr.clave===p;
+  });
+
+  if(!encontrado){
+    document.getElementById('lfUser').classList.add('error');
+    document.getElementById('lfPass').classList.add('error');
+    document.getElementById('loginError').classList.add('show');
+    document.getElementById('loginPass').value='';
+    return;
+  }
+
+  // Login exitoso
+  cobrador_activo = encontrado;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('userChipName').textContent = CREDENCIALES[encontrado].usuario;
+
+  // Poblar selector SOLO con el cobrador que ingresó
+  const sel=document.getElementById('cobrador');
+  sel.innerHTML='<option value="">— Seleccionar cobrador —</option>';
+  const opt=document.createElement('option');
+  opt.value=encontrado; opt.textContent=encontrado; opt.selected=true;
+  sel.appendChild(opt);
+  // Forzar select2 si ya está inicializado
+  if(window.$) try{ $('#cobrador').trigger('change'); }catch(e){}
+}
+
+function cerrarSesion(){
+  if(!confirm('¿Deseas cerrar sesión?')) return;
+  cobrador_activo=null;
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('loginError').classList.remove('show');
+}
+
+document.getElementById('btnLogin').addEventListener('click', doLogin);
+document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('loginUser').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('loginPass').focus(); });
 
 // ══ TOAST ══
 function showToast(msg,type='info'){
@@ -643,52 +775,7 @@ document.getElementById('btnClear').addEventListener('click',()=>{
 });
 
 // ══ PDF ══
-document.getElementById('btnPdf').addEventListener('click',()=>{
-  if(!validateForm()){showToast('Complete los campos requeridos.','error');return;}
-  const{jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const data=collectData(),W=doc.internal.pageSize.width;
-  doc.setFillColor(26,107,107);doc.rect(0,0,W,22,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont('helvetica','bold');
-  doc.text('FORMULARIO DE CIERRE DIARIO DE COBRANZA',W/2,13,{align:'center'});
-  doc.setFillColor(238,247,247);doc.rect(0,22,W,10,'F');
-  doc.setTextColor(26,107,107);doc.setFontSize(8);doc.setFont('helvetica','normal');
-  doc.text(`Fecha: ${data.fecha}   |   Hora: ${data.hora}`,W/2,28,{align:'center'});
-  let y=40;
-  doc.setFillColor(245,243,238);doc.roundedRect(14,y-5,W-28,14,2,2,'F');
-  doc.setTextColor(60,60,60);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text('COBRADOR:',18,y+2);
-  doc.setFont('helvetica','normal');doc.setTextColor(26,107,107);doc.setFontSize(9);doc.text(data.cobrador||'—',50,y+2);y+=20;
-  doc.setDrawColor(220,213,194);doc.setLineWidth(0.3);doc.roundedRect(14,y-4,W-28,40,2,2,'S');
-  doc.setFillColor(26,107,107);doc.rect(14,y-4,W-28,7,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.text('DETALLE DE GESTIÓN',20,y+0.5);y+=12;
-  const flds=[['Verificaciones',data.verificaciones||'0'],['Mejora',data.mejora||'0'],['Contiene',data.contiene||'0'],['Retiros',`$ ${data.retiros||'0.00'}`],['Refinanciamientos',data.refinanciamientos||'0'],['Abonos Diario',`$ ${data.abonosDiario||'0.00'}`]];
-  const cw=(W-28)/3-2;
-  flds.forEach((f,i)=>{const col=i%3,row=Math.floor(i/3),fx=18+col*(cw+2),fy=y+row*14;doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(120,116,105);doc.text(f[0].toUpperCase(),fx,fy);doc.setFont('helvetica','normal');doc.setTextColor(26,107,107);doc.setFontSize(10);doc.text(f[1],fx,fy+6);});y+=30;
-  if(data.clientes.length>0){doc.autoTable({startY:y,head:[['#','Cédula','Nombre Cliente Mejora','CXC Total']],body:data.clientes.map((r,i)=>[i+1,r.cedula||'—',r.nombre||'—',`$ ${formatCurrency(r.cxc)}`]),theme:'grid',headStyles:{fillColor:[26,107,107],textColor:255,fontSize:8,fontStyle:'bold',halign:'center'},bodyStyles:{fontSize:8,textColor:[40,40,40]},alternateRowStyles:{fillColor:[245,243,238]},columnStyles:{0:{halign:'center',cellWidth:10},1:{cellWidth:28},3:{halign:'right',cellWidth:28}},margin:{left:14,right:14}});y=doc.lastAutoTable.finalY+6;}
-  doc.setFillColor(26,107,107);doc.roundedRect(W-70,y,56,14,2,2,'F');doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.text('TOTAL CXC MEJORA',W-42,y+5,{align:'center'});doc.setFontSize(11);doc.text(`$ ${data.totalCXC}`,W-42,y+11,{align:'center'});y+=20;
-  if((data.clientesContiene||[]).length>0){doc.autoTable({startY:y,head:[['#','Cédula','Nombre Cliente Contiene','CXC Total']],body:data.clientesContiene.map((r,i)=>[i+1,r.cedula||'—',r.nombre||'—',`$ ${formatCurrency(r.cxc)}`]),theme:'grid',headStyles:{fillColor:[61,58,52],textColor:255,fontSize:8,fontStyle:'bold',halign:'center'},bodyStyles:{fontSize:8,textColor:[40,40,40]},alternateRowStyles:{fillColor:[245,243,238]},columnStyles:{0:{halign:'center',cellWidth:10},1:{cellWidth:28},3:{halign:'right',cellWidth:28}},margin:{left:14,right:14}});y=doc.lastAutoTable.finalY+6;}
-  doc.setFillColor(184,134,11);doc.roundedRect(W-70,y,56,14,2,2,'F');doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.text('TOTAL CXC CONTIENE',W-42,y+5,{align:'center'});doc.setFontSize(11);doc.text(`$ ${data.totalCXC2||'0.00'}`,W-42,y+11,{align:'center'});
-  for(let i=1;i<=doc.internal.getNumberOfPages();i++){doc.setPage(i);doc.setFillColor(245,243,238);doc.rect(0,doc.internal.pageSize.height-10,W,10,'F');doc.setTextColor(150,142,128);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text('Generado por Sistema de Cobranza  —  Documento confidencial',W/2,doc.internal.pageSize.height-3.5,{align:'center'});}
-  doc.save(`Cierre_Cobranza_${Date.now()}.pdf`);
-  showToast('PDF exportado exitosamente.','success');
-});
 
-// ══ EXCEL ══
-document.getElementById('btnExcel').addEventListener('click',()=>{
-  if(!validateForm()){showToast('Complete los campos requeridos.','error');return;}
-  const data=collectData();
-  const wb=XLSX.utils.book_new();
-  const ws1=XLSX.utils.aoa_to_sheet([['FORMULARIO DE CIERRE DIARIO DE COBRANZA'],[],['Fecha:',data.fecha],['Hora:',data.hora],['Cobrador:',data.cobrador],[],['DETALLE DE GESTIÓN'],['Verificaciones:',data.verificaciones],['Mejora:',data.mejora],['Contiene:',data.contiene],['Retiros:',data.retiros],['Refinanciamientos:',data.refinanciamientos],['Abonos Diario:',data.abonosDiario],[],['TOTAL CXC MEJORA:',data.totalCXC],['TOTAL CXC CONTIENE:',data.totalCXC2]]);
-  ws1['!cols']=[{wch:28},{wch:50}];XLSX.utils.book_append_sheet(wb,ws1,'Resumen');
-  const r2=[['#','Cédula','Nombre Cliente Mejora','CXC Total'],...data.clientes.map((r,i)=>[i+1,r.cedula,r.nombre,r.cxc])];
-  if(data.clientes.length>0){r2.push([]);r2.push(['','','TOTAL CXC MEJORA',data.totalCXC]);}
-  const ws2=XLSX.utils.aoa_to_sheet(r2);ws2['!cols']=[{wch:5},{wch:15},{wch:40},{wch:15}];XLSX.utils.book_append_sheet(wb,ws2,'Clientes Mejora');
-  const r3=[['#','Cédula','Nombre Cliente Contiene','CXC Total'],...(data.clientesContiene||[]).map((r,i)=>[i+1,r.cedula,r.nombre,r.cxc])];
-  if((data.clientesContiene||[]).length>0){r3.push([]);r3.push(['','','TOTAL CXC CONTIENE',data.totalCXC2]);}
-  const ws3=XLSX.utils.aoa_to_sheet(r3);ws3['!cols']=[{wch:5},{wch:15},{wch:40},{wch:15}];XLSX.utils.book_append_sheet(wb,ws3,'Clientes Contiene');
-  XLSX.writeFile(wb,`Cierre_Cobranza_${Date.now()}.xlsx`);
-  showToast('Excel exportado exitosamente.','success');
-});
 </script>
 </body>
 </html>
