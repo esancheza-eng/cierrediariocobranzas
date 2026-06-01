@@ -604,10 +604,6 @@ function collectData(){
 
 // ══ WHATSAPP ══
 function buildWAMsg(data){
-  const cr=CREDENCIALES[data.cobrador]||{usuario:'—',clave:'—'};
-  const coord=data.geolocalizacion?.lat
-    ?`${data.geolocalizacion.lat}, ${data.geolocalizacion.lon} (±${data.geolocalizacion.accuracy}m)\nhttps://maps.google.com/?q=${data.geolocalizacion.lat},${data.geolocalizacion.lon}`
-    :'No disponible';
   const cl=(data.clientes||[]).length>0
     ?data.clientes.map((c,i)=>`  ${i+1}. ${c.cedula} | ${c.nombre} | $${c.cxc}`).join('\n')
     :'  (Sin clientes registrados)';
@@ -619,8 +615,6 @@ function buildWAMsg(data){
 📅 *Fecha:* ${data.fecha}
 🕐 *Hora:* ${data.hora}
 👤 *Cobrador:* ${data.cobrador||'—'}
-🔑 *Usuario:* ${cr.usuario}
-🔒 *Contraseña:* ${cr.clave}
 
 *📊 DETALLE DE GESTIÓN*
 • Verificaciones: ${data.verificaciones||0}
@@ -637,9 +631,6 @@ ${cl}
 *📦 CLIENTES CONTIENE*
 ${cc}
 💰 *TOTAL CXC CONTIENE: $${data.totalCXC2||'0.00'}*
-
-📍 *Ubicación de guardado:*
-${coord}
 ──────────────────────
 _Generado por Sistema de Cobranza_`;
 }
