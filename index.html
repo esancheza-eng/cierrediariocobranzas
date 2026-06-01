@@ -204,15 +204,19 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       <div class="sync-bar" id="syncBar"><div class="sync-dot syncing" id="syncDot"></div><span id="syncMsg">Sincronizando con Google Sheets…</span></div>
       <table class="summary-table" id="summaryTable"></table>
     </div>
-    <div class="modal-footer" id="footerPreSave" style="flex-direction:column;gap:10px;align-items:stretch">
-      <button class="btn-main btn-save" id="confirmSave" style="width:100%;justify-content:center;font-size:15px;padding:14px"><i class="bi bi-floppy2"></i> Guardar y enviar WhatsApp</button>
-      <button class="btn-main btn-clear" id="cancelModal" style="width:100%;justify-content:center;font-size:13px"><i class="bi bi-x-lg"></i> Cancelar</button>
-    </div>
-      <div class="modal-footer" id="footerPostSave" style="flex-wrap:wrap;gap:10px;display:none!important;flex-direction:column;align-items:stretch">
-        <div style="display:flex;align-items:center;gap:6px;color:var(--green-soft);font-size:13px;font-weight:700;justify-content:center;padding:4px 0"><i class="bi bi-check-circle-fill"></i> Guardado correctamente</div>
-        <button class="wa-btn" id="shareWA" style="width:100%;justify-content:center;font-size:15px;padding:14px 20px"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;fill:white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Enviar por WhatsApp</button>
+    <div class="modal-footer" style="flex-direction:column;gap:10px;align-items:stretch">
+      <!-- PRE SAVE -->
+      <div id="footerPreSave">
+        <button class="btn-main btn-save" id="confirmSave" style="width:100%;justify-content:center;font-size:15px;padding:14px;margin-bottom:8px"><i class="bi bi-floppy2"></i> Guardar y enviar WhatsApp</button>
+        <button class="btn-main btn-clear" id="cancelModal" style="width:100%;justify-content:center;font-size:13px"><i class="bi bi-x-lg"></i> Cancelar</button>
+      </div>
+      <!-- POST SAVE -->
+      <div id="footerPostSave" style="display:none">
+        <div style="display:flex;align-items:center;gap:6px;color:var(--green-soft);font-size:13px;font-weight:700;justify-content:center;padding:4px 0;margin-bottom:8px"><i class="bi bi-check-circle-fill"></i> ¡Guardado correctamente!</div>
+        <button class="wa-btn" id="shareWA" style="width:100%;justify-content:center;font-size:15px;padding:14px 20px;margin-bottom:8px"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;fill:white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Enviar por WhatsApp</button>
         <button class="btn-main btn-clear" id="closeSaved" style="width:100%;justify-content:center;font-size:13px"><i class="bi bi-x-lg"></i> Cerrar</button>
       </div>
+    </div>
     </div>
   </div>
 </div>
@@ -685,25 +689,23 @@ let savedPayload=null;
 document.getElementById('btnSave').addEventListener('click',()=>{
   if(!validateForm()){showToast('Complete los campos requeridos.','error');return;}
   savedPayload=null;
-  document.getElementById('footerPreSave').style.display='flex';
-  document.getElementById('footerPostSave').style.setProperty('display','none','important');
+  document.getElementById('footerPreSave').style.display='block';
+  document.getElementById('footerPostSave').style.display='none';
   document.getElementById('syncBar').classList.remove('visible');
-  // Llenar resumen
   const data=collectData();
-  document.getElementById('summaryTable').innerHTML=`
-    <tr><td class="s-label">Cobrador</td><td class="s-val">${data.cobrador||'—'}</td></tr>
-    <tr><td class="s-label">Fecha / Hora</td><td class="s-val">${data.fecha} ${data.hora}</td></tr>
-    <tr><td class="s-label">GPS</td><td class="s-val" style="font-size:12px;font-family:monospace">${coord}</td></tr>
-    <tr><td class="s-label">Verificaciones</td><td class="s-val">${data.verificaciones||0}</td></tr>
-    <tr><td class="s-label">Mejora</td><td class="s-val">${data.mejora||0}</td></tr>
-    <tr><td class="s-label">Contiene</td><td class="s-val">${data.contiene||0}</td></tr>
-    <tr><td class="s-label">Retiros (registros)</td><td class="s-val">${data.retiros_tabla?.length||0} | $ ${data.totalRetiros||'0.00'}</td></tr>
-    <tr><td class="s-label">Refinanciamientos</td><td class="s-val">${data.refinanciamientos||0}</td></tr>
-    <tr><td class="s-label">Recaudación Diaria</td><td class="s-val">$ ${data.abonosDiario||'0.00'}</td></tr>
-    <tr><td class="s-label">Clientes Mejora</td><td class="s-val">${data.clientes.length}</td></tr>
-    <tr><td class="s-label">Total CXC Mejora</td><td class="s-val hi">$ ${data.totalCXC}</td></tr>
-    <tr><td class="s-label" style="border-top:2px solid var(--cream-dark);padding-top:10px">Clientes Contiene</td><td class="s-val" style="border-top:2px solid var(--cream-dark);padding-top:10px">${data.clientesContiene?.length||0}</td></tr>
-    <tr><td class="s-label">Total CXC Contiene</td><td class="s-val" style="color:var(--gold);font-size:15px;font-weight:700">$ ${data.totalCXC2||'0.00'}</td></tr>`;
+  document.getElementById('summaryTable').innerHTML=
+    '<tr><td class="s-label">Cobrador</td><td class="s-val">'+( data.cobrador||'—')+'</td></tr>'+
+    '<tr><td class="s-label">Fecha / Hora</td><td class="s-val">'+data.fecha+' '+data.hora+'</td></tr>'+
+    '<tr><td class="s-label">Verificaciones</td><td class="s-val">'+(data.verificaciones||0)+'</td></tr>'+
+    '<tr><td class="s-label">Mejora Diario CXC $</td><td class="s-val">$ '+(data.mejora||0)+'</td></tr>'+
+    '<tr><td class="s-label">Contiene Diario CXC $</td><td class="s-val">$ '+(data.contiene||0)+'</td></tr>'+
+    '<tr><td class="s-label">Retiros del día</td><td class="s-val">'+(data.retiros_tabla?.length||0)+' reg. | $ '+(data.totalRetiros||'0.00')+'</td></tr>'+
+    '<tr><td class="s-label">Refinanciamientos $</td><td class="s-val">$ '+(data.refinanciamientos||0)+'</td></tr>'+
+    '<tr><td class="s-label">Recaudación Diaria $</td><td class="s-val">$ '+(data.abonosDiario||'0.00')+'</td></tr>'+
+    '<tr><td class="s-label">Clientes Mejora</td><td class="s-val">'+data.clientes.length+'</td></tr>'+
+    '<tr><td class="s-label">Total CXC Mejora</td><td class="s-val hi">$ '+data.totalCXC+'</td></tr>'+
+    '<tr><td class="s-label" style="border-top:2px solid var(--cream-dark);padding-top:10px">Clientes Contiene</td><td class="s-val" style="border-top:2px solid var(--cream-dark);padding-top:10px">'+(data.clientesContiene?.length||0)+'</td></tr>'+
+    '<tr><td class="s-label">Total CXC Contiene</td><td class="s-val" style="color:var(--gold);font-size:15px;font-weight:700">$ '+(data.totalCXC2||'0.00')+'</td></tr>';
   document.getElementById('saveModal').classList.add('active');
 });
 
@@ -718,8 +720,8 @@ document.getElementById('confirmSave').addEventListener('click',async()=>{
 
   document.getElementById('statusPill').innerHTML='<i class="bi bi-circle-fill" style="font-size:7px"></i> Guardado';
   document.getElementById('statusPill').className='status-pill saved';
-  document.getElementById('footerPreSave').style.setProperty('display','none','important');
-  document.getElementById('footerPostSave').style.setProperty('display','flex','important');
+  document.getElementById('footerPreSave').style.display='none';
+  document.getElementById('footerPostSave').style.display='block';
 
   // Sync Sheets
   const sb=document.getElementById('syncBar'),sd=document.getElementById('syncDot'),sm=document.getElementById('syncMsg');
